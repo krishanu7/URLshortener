@@ -26,18 +26,25 @@ A scalable and feature-rich URL shortener built in Go. This project follows a ph
 ```
 urlshortener/
 ├── cmd/
-│   └── main.go
-├── config/
-├── controllers/
-├── models/
-├── routes/
-├── services/
-├── static/
-│   └── index.html
-├── tests/
-├── go.mod
-├── go.sum
-└── README.md
+│   └── api/
+│       └── main.go              # Entry point for the API server
+├── internal/
+│   ├── config/
+│   │   └── config.go            # Configuration (e.g., environment variables, database settings)
+│   ├── handlers/
+│   │   └── url.go               # HTTP handlers for URL endpoints
+│   ├── models/
+│   │   └── url.go               # URL data model and structs
+│   ├── repository/
+│   │   └── url_repository.go    # Database operations (CRUD)
+│   └── util/
+│       └── shortcode.go         # Short code generation logic
+├── docker-compose.yml           # Docker configuration for PostgreSQL and API
+├── Dockerfile                   # Dockerfile for the Go application
+├── .env                         # Environment variables (e.g., DB connection string)
+├── go.mod                       # Go module file
+├── go.sum                       # Go module dependencies
+└── README.md                    # Project documentation
 ```
 
 ---
