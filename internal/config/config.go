@@ -7,10 +7,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-
 type Config struct {
 	DatabaseURL string
-	Port string
+	Port        string
+	RedisURL    string
 }
 
 func LoadConfig() (*Config, error) {
@@ -20,7 +20,8 @@ func LoadConfig() (*Config, error) {
 	}
 	config := &Config{
 		DatabaseURL: os.Getenv("DATABASE_URL"),
-		Port: os.Getenv("PORT"),
+		Port:        os.Getenv("PORT"),
+		RedisURL:    os.Getenv("REDIS_URL"),
 	}
 
 	if config.DatabaseURL == "" {
@@ -29,6 +30,10 @@ func LoadConfig() (*Config, error) {
 
 	if config.Port == "" {
 		config.Port = "8080"
+	}
+
+	if config.RedisURL == "" {
+		config.RedisURL = "redis://localhost:6379"
 	}
 	return config, nil
 }
