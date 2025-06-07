@@ -8,19 +8,18 @@ import (
 	"urlshortener/internal/handlers"
 	"urlshortener/internal/repository"
 
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
-
-
 
 func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
-	db, err := sql.Open("postgres", cfg.DatabaseURL);
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		 log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
 
@@ -31,10 +30,16 @@ func main() {
 	urlRepo := repository.NewURLRepository(db)
 	urlHandler := handlers.NewURLHandler(urlRepo)
 
-	http.HandleFunc("/shorten", urlHandler.Shorten)
-	
+	r := mux.NewRouter()
+	r.HandleFunc("/shorten", urlHandler.Shorten).Methods("POST")
+	r.HandleFunc("/shorten/{code}", urlHandler.Get).Methods("GET")
+	r.HandleFunc("/shorten/{code}", urlHandler.Update).Methods("PUT")
+	r.HandleFunc("/shorten/{code}", urlHandler.Delete).Methods("DELETE")
+	r.HandleFunc("/shorten/{code}/stats", urlHandler.Stats).Methods("GET")
+	r.HandleFunc("/{code}", urlHandler.Redirect).Methods("GET")
+
 	log.Printf("Starting server on :%s", cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, nil); err != nil {
+	if err := http.ListenAndServe(":"+cfg.Port, r); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
