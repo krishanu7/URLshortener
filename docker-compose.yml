@@ -1,4 +1,4 @@
-versiion: '3.8'
+version: '3.8'
 services:
   postgres:
     image: postgres:15
@@ -16,5 +16,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://urlshortener:mysecretpassword@postgres:5432/urlshortener?sslmode=disable
+      - PORT=8080
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres_data:
