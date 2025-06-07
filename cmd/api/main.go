@@ -7,6 +7,8 @@ import (
 	"urlshortener/internal/config"
 	"urlshortener/internal/handlers"
 	"urlshortener/internal/repository"
+
+	_ "github.com/lib/pq"
 )
 
 
