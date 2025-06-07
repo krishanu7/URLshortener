@@ -26,7 +26,7 @@ func (r *URLRepository) Create(url *models.URL) error {
 		}
 		url.ShortCode = shortCode
 		err = r.db.QueryRow(
-			"INSERT INTO urls (original_url, short_code) VALUES ($1, $2) RETURING id, created_at, updated_at, access_count, is_active", url.OriginalURL, url.ShortCode,
+			"INSERT INTO urls (original_url, short_code) VALUES ($1, $2) RETURNING id, created_at, updated_at, access_count, is_active", url.OriginalURL, url.ShortCode,
 		).Scan(&url.ID, &url.CreatedAt, &url.UpdatedAt, &url.AccessCount, &url.IsActive)
 
 		if err == nil {
