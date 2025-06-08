@@ -175,7 +175,7 @@ func (r *URLRepository) syncAccessCounts() {
 		}
 		if count > 0 {
 			_, err := r.db.Exec(
-				"UPDATE urls SET access_count = access_count + $1 WHERE short_code $2",
+				"UPDATE urls SET access_count = access_count + $1 WHERE short_code = $2",
 				count, shortCode,
 			)
 			if err == nil {
