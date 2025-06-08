@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   postgres:
     image: postgres:15
@@ -16,6 +17,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
   redis:
     image: redis:7
     ports:
@@ -27,21 +29,65 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-  app:
+
+  api1:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - DATABASE_URL=postgres://urlshortener:mysecretpassword@postgres:5432/urlshortener?sslmode=disable
+      - REDIS_URL=redis:6379
+      - PORT=8080
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  api2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
     environment:
       - DATABASE_URL=postgres://urlshortener:mysecretpassword@postgres:5432/urlshortener?sslmode=disable
       - REDIS_URL=redis:6379
       - PORT=8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  api3:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8083:8080"
+    environment:
+      - DATABASE_URL=postgres://urlshortener:mysecretpassword@postgres:5432/urlshortener?sslmode=disable
+      - REDIS_URL=redis:6379
+      - PORT=8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api1
+      - api2
+      - api3
 
 volumes:
   postgres_data:
